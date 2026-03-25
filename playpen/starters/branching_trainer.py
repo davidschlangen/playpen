@@ -5,14 +5,14 @@ from clemcore.backends import Model
 from clemcore.clemgame import GameRegistry, GameInstances, GameBenchmarkCallbackList, GameBenchmark, \
     InstanceFileSaver, ExperimentFileSaver, EpochResultsFolder, EpochResultsFolderCallback, InteractionsFileSaver
 from clemcore.clemgame.runners import branching
-from playpen import BasePlayPen, to_instances_filter
+from playpen import BasePlaypenTrainer, to_instances_filter
 from datasets import load_dataset
 
 from playpen.buffers import BranchingEpisodeBuffer
 from playpen.callbacks.buffers import BranchingEpisodeBufferCallback
 
 
-class BranchingPlayPenTrainer(BasePlayPen):
+class BranchingPlayPenTrainer(BasePlaypenTrainer):
 
     def __init__(self, learner: Model, teacher: Model):
         """Showcase using the game of Taboo, which requires two players.
@@ -51,8 +51,9 @@ class BranchingPlayPenTrainer(BasePlayPen):
             InteractionsFileSaver(results_folder, player_model_infos=model_infos, store_branches=True)
         ])
 
-    def learn(self, game_registry: GameRegistry):
+    def learn(self):
         # We use the taboo game to showcase the basic playpen flow
+        game_registry = GameRegistry.from_directories_and_cwd_files()
         game_spec = game_registry.get_game_specs_that_unify_with("taboo")[0]
 
         # We only use the training instances so that we can properly evaluate on the validation set later

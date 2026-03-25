@@ -5,14 +5,14 @@ from clemcore.backends import Model
 from clemcore.clemgame import GameRegistry, GameInstances, GameBenchmarkCallbackList, GameBenchmark, \
     InstanceFileSaver, ExperimentFileSaver, InteractionsFileSaver, EpochResultsFolder, EpochResultsFolderCallback
 from clemcore.clemgame.runners import sequential
-from playpen import BasePlayPen, to_instances_filter
+from playpen import BasePlaypenTrainer, to_instances_filter
 from datasets import load_dataset
 
 from playpen.buffers import EpisodeBuffer
 from playpen.callbacks.buffers import EpisodeBufferCallback
 
 
-class BatchwisePlayPenTrainer(BasePlayPen):
+class BatchwisePlayPenTrainer(BasePlaypenTrainer):
 
     def __init__(self, learner: Model, teacher: Model):
         """Showcase using the game of Taboo, which requires two players.
@@ -49,8 +49,9 @@ class BatchwisePlayPenTrainer(BasePlayPen):
             InteractionsFileSaver(results_folder, player_model_infos=model_infos)
         ])
 
-    def learn(self, game_registry: GameRegistry):
+    def learn(self):
         # We use the taboo game to showcase the basic playpen flow
+        game_registry = GameRegistry.from_directories_and_cwd_files()
         game_spec = game_registry.get_game_specs_that_unify_with("taboo")[0]
 
         # We only use the training instances so that we can properly evaluate on the validation set later
@@ -87,7 +88,8 @@ class BatchwisePlayPenTrainer(BasePlayPen):
 
     def _train(self):
         # Convert the collected trajectories into conversational data format
-        conversational_dataset = self.episode_buffer.to_conversational_dataset(self.learner)
+        # Must be implemented by inheriting EpisodeBuffer
+        conversational_dataset = self.episode_buffer.to_conversational_dataset("Player 2")  # Guesser
         print("Collected episodes (perspective=learner):", len(conversational_dataset))
         print("Example episode:")
         for conversation in conversational_dataset:
