@@ -276,7 +276,7 @@ OpenEnv adopts a Gymnasium-style API interface, and this should facilitate RL pr
 
 This [notebook example](./examples/openenv/wordle-trl.ipynb) shows how to train a model with GRPO on the Wordle game with _clemcore_ and _playpen_. 
 You will notice that you will have to define a custom agent and a customized rollout function to play in the game environments.
-Playen offers a base agent class (_ClemAgent_, which can be found at `playpen\agents\clem.py`). This class helps you by providing already means for collecting observations and returning their history. 
+Playen offers a base agent class (_ClemAgent_, which can be found at `playpen/agents/clem.py`). This class helps you by providing already means for collecting observations and returning their history. 
 What you have to do is to define the `act` method, where you define how your agent should act given the observation history.
 
 # Dataset Generation
