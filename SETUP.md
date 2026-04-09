@@ -97,8 +97,8 @@ playpen list models
 
 Further details regarding the other fields of a model entry are available in the [official documentation](https://github.com/clp-research/clemcore/blob/main/docs/model_backend_registry_readme.md).
 ## Registering an API key
-There are two ways to register an API key. The first is within your environment as an environment variable. The second is within a file named `key.json`.
-For the second case, copy or rename the file called `key.json.template` contained within the project's folder.
+To register an API key, copy or rename the file called `key.json.template` contained within the project's folder as `key.json`.
+
 You may notice that there are several entries with the names of popular providers.
 In the case you are interested in running Huggingface models, insert your key under `huggingface`:
 ```json
