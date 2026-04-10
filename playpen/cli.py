@@ -9,7 +9,7 @@ from datetime import datetime
 
 import clemcore.cli as clem
 from clemcore.backends import ModelSpec, ModelRegistry, BackendRegistry
-from clemcore.clemgame import GameSpec
+from clemcore.clemgame import GameSpec, GameRegistry
 from playpen import BasePlaypenTrainer, to_instances_filter
 
 
@@ -91,6 +91,16 @@ def get_default_results_dir():
     results_dir = Path("playpen-eval") / timestamp
     return results_dir
 
+def game_selector_in_suite(suite: str, game_selector: str):
+    game_registry = GameRegistry.from_directories_and_cwd_files()
+    suite_selector = "{'benchmark':['2.0']}" if suite == "clem" else "{'benchmark':['static_1.0']}"
+    suite_game_list = [g.game_name for g in game_registry.get_game_specs_that_unify_with(suite_selector)]
+    game_list = [g.game_name for g in game_registry.get_game_specs_that_unify_with(game_selector)]
+    in_suite = True
+    for game in game_list:
+        if game not in suite_game_list:
+            in_suite = False
+    return in_suite
 
 def evaluate_suite(suite: str, model_spec: ModelSpec, gen_args: Dict, results_dir: Path, game_selector: str,
                    dataset_name: str):
@@ -129,6 +139,8 @@ def evaluate(suite: str, model_spec: ModelSpec, gen_args: Dict, results_dir: Pat
             print(f"You have both set suite {suite} and game selector {game_selector}, however this game selector is an alias for a suite! Ignoring game selector. Please either set the suite to None or change the game selector if this was not your intended behaviour.")
             game_selector = None
         else:
+            if not game_selector_in_suite(suite, game_selector):
+                raise ValueError(f"You have selected suite `{suite}` and game selector `{game_selector}`, but the game selector is not associated with the suite.")
             print(f"Suite `{suite}` and game selector `{game_selector}` selected.")
 
 
