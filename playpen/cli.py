@@ -150,7 +150,7 @@ def evaluate(suite: str, model_spec: ModelSpec, gen_args: Dict, results_dir: Pat
 
     for suite, games in suite_game_map.items():
         if len(games) > 0:
-            dataset_name = None if skip_gameplay else "instances"
+            dataset_name = None if skip_gameplay else ("instances" if suite == "clem" else "instances-static")
             clem_score = evaluate_suite(suite, model_spec, gen_args, results_dir, games, dataset_name)
             store_eval_score(overall_results_file, "clemscore" if suite == "clem" else "statscore", clem_score)
 
