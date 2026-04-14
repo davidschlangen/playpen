@@ -130,8 +130,8 @@ def evaluate_suite(suite: str, model_spec: ModelSpec, gen_args: Dict, results_di
 
     try:
         df = clem.clemeval.perform_evaluation(str(suite_results_dir), return_dataframe=True)
-    except:
-        raise ValueError("Impossible generating the result reports for your run. Check whether the requested task is part of this suite or the clembench.log file for issues caused by clemcore.")
+    except Exception as e:
+        raise ValueError("Impossible generating the result reports for your run. Check whether the requested task is part of this suite or the clembench.log file for issues caused by clemcore.") from e
     clem_score = df["-, clemscore"][0]
     return clem_score
 
