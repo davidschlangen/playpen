@@ -10,8 +10,6 @@ from datetime import datetime
 import clemcore.cli as clem
 from clemcore.backends import ModelSpec, ModelRegistry, BackendRegistry
 from clemcore.clemgame import GameSpec, GameRegistry
-from numpy.f2py.auxfuncs import isstring
-
 from playpen import BasePlaypenTrainer, to_instances_filter
 
 
@@ -100,8 +98,8 @@ def get_suite_game_map(game_selectors: Union[str, Dict, GameSpec, List[Union[str
         "static": []
     }
     suite_games = {
-        "clem": [g.game_name for g in game_registry.get_game_specs_that_unify_with("{'benchmark':['2.0']}")],
-        "static": [g.game_name for g in game_registry.get_game_specs_that_unify_with("{'benchmark':['static_1.0']}")]
+        "clem": [g for g in game_registry.get_game_specs_that_unify_with("{'benchmark':['2.0']}")],
+        "static": [g for g in game_registry.get_game_specs_that_unify_with("{'benchmark':['static_1.0']}")]
     }
     if not isinstance(game_selectors, list):
         game_selectors = [game_selectors]
@@ -111,11 +109,10 @@ def get_suite_game_map(game_selectors: Union[str, Dict, GameSpec, List[Union[str
             game_registry.get_game_specs_that_unify_with(game_selector))  # throws error when nothing unifies
     game_specs = list(game_specs)
     for game_spec in game_specs:
-        game_name = game_spec.game_name
-        if game_name in suite_games["clem"]:
-            suite_game_map["clem"].append(game_spec)
-        if game_name in suite_games["static"]:
-            suite_game_map["static"].append(game_spec)
+        if game_spec in suite_games["clem"]:
+            suite_game_map["clem"].append(game_spec.game_name)
+        if game_spec in suite_games["static"]:
+            suite_game_map["static"].append(game_spec.game_name)
     return suite_game_map
 
 
