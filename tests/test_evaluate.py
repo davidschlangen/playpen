@@ -57,6 +57,14 @@ class EvaluateTest(unittest.TestCase):
         evaluate(None, self.model_spec, self.gen_args, self.results_dir, "wordle", False)
         self.mock_get_suite_game_map.assert_called_once_with("wordle")
 
+    def test_list_of_game_selectors_without_suite(self):
+        evaluate(None, self.model_spec, self.gen_args, self.results_dir, ["wordle", "taboo"], False)
+        self.mock_get_suite_game_map.assert_called_once_with(["wordle", "taboo"])
+
+    def test_list_of_game_selectors_with_suite(self):
+        evaluate("clem", self.model_spec, self.gen_args, self.results_dir, ["wordle", "taboo"], False)
+        self.mock_get_suite_game_map.assert_called_once_with(["wordle", "taboo"])
+
     # ------------------------------------------------------------------ #
     # skip_gameplay / dataset_name                                         #
     # ------------------------------------------------------------------ #

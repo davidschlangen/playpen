@@ -4,12 +4,14 @@ import importlib.util as importlib_util
 import json
 import os
 from pathlib import Path
-from typing import Dict
+from typing import Dict, List, Union
 from datetime import datetime
 
 import clemcore.cli as clem
 from clemcore.backends import ModelSpec, ModelRegistry, BackendRegistry
 from clemcore.clemgame import GameSpec, GameRegistry
+from numpy.f2py.auxfuncs import isstring
+
 from playpen import BasePlaypenTrainer, to_instances_filter
 
 
@@ -91,7 +93,7 @@ def get_default_results_dir():
     return results_dir
 
 
-def get_suite_game_map(game_selector:str):
+def get_suite_game_map(game_selectors: Union[str, Dict, GameSpec, List[Union[str, Dict, GameSpec]]]):
     game_registry = GameRegistry.from_directories_and_cwd_files()
     suite_game_map = {
         "clem": [],
@@ -101,11 +103,18 @@ def get_suite_game_map(game_selector:str):
         "clem": [g.game_name for g in game_registry.get_game_specs_that_unify_with("{'benchmark':['2.0']}")],
         "static": [g.game_name for g in game_registry.get_game_specs_that_unify_with("{'benchmark':['static_1.0']}")]
     }
-    game_list = [g.game_name for g in game_registry.get_game_specs_that_unify_with(game_selector)]
-    for game in game_list:
-        if game in suite_games["clem"]:
+    if not isinstance(game_selectors, list):
+        game_selectors = [game_selectors]
+    game_specs = set()
+    for game_selector in game_selectors:
+        game_specs.update(
+            game_registry.get_game_specs_that_unify_with(game_selector))  # throws error when nothing unifies
+    game_specs = list(game_specs)
+    for game in game_specs:
+        game_name = game.game_name
+        if game_name in suite_games["clem"]:
             suite_game_map["clem"].append(game)
-        if game in suite_games["static"]:
+        if game_name in suite_games["static"]:
             suite_game_map["static"].append(game)
     return suite_game_map
 
@@ -128,17 +137,17 @@ def evaluate_suite(suite: str, model_spec: ModelSpec, gen_args: Dict, results_di
     return clem_score
 
 
-def evaluate(suite: str, model_spec: ModelSpec, gen_args: Dict, results_dir: Path, game_selector: str,
+def evaluate(suite: str, model_spec: ModelSpec, gen_args: Dict, results_dir: Path, game_selectors: Union[str, Dict, GameSpec, List[Union[str, Dict, GameSpec]]],
              skip_gameplay: bool):
     overall_results_file = results_dir / f"{model_spec.model_name}.val.json"
-    if suite is None and game_selector is None:
+    if suite is None and game_selectors is None:
         raise ValueError("Either `suite` or `game_selector` must be specified.")
-    elif suite is not None and game_selector is None:
+    elif suite is not None and game_selectors is None:
         print(f"Suite {suite} selected for the evaluation.")
-        game_selector = ["{'benchmark':['2.0']}", "{'benchmark':['static_1.0']}"] if suite == "all" else ["{'benchmark':['static_1.0']}"] if suite == "static" else ["{'benchmark':['2.0']}"]
-    elif suite is not None and game_selector is not None:
+        game_selectors = ["{'benchmark':['2.0']}", "{'benchmark':['static_1.0']}"] if suite == "all" else ["{'benchmark':['static_1.0']}"] if suite == "static" else ["{'benchmark':['2.0']}"]
+    elif suite is not None and game_selectors is not None:
         print("You have specified both `suite` and `game_selector`. When you select a game_selector a suite is detected automatically for each game.")
-    suite_game_map = get_suite_game_map(game_selector)
+    suite_game_map = get_suite_game_map(game_selectors)
 
     for suite, games in suite_game_map.items():
         if len(games) > 0:
@@ -205,10 +214,8 @@ def main():
                              nargs="?", type=str,
                              help="(Optional) Suite selector for the eval run."
                                   " Default: all")
-    eval_parser.add_argument("-g", "--game", type=str,
-                             help="(Optional) Game selector, such as a game name or a GameSpec JSON string."
-                                  " Default: {\"benchmark\": [\"2.0\"]} (clem suite)"
-                                  " or {\"benchmark\": [\"static_1.0\"]} (static suite)")
+    eval_parser.add_argument("-g", "--game", type=str, nargs="+",
+                            help="""(Optional) One or more game selectors, such as a game name or a GameSpec JSON string.""")
     eval_parser.add_argument("-r", "--results_dir", type=Path, default=get_default_results_dir(),
                              help="(Optional) Relative or absolute path to a playpen-eval results directory."
                                   " This is expected to be one level above 'clem' or 'static' results."
