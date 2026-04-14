@@ -111,10 +111,9 @@ def get_suite_game_map(game_selectors: Union[str, Dict, GameSpec, List[Union[str
             game_registry.get_game_specs_that_unify_with(game_selector))  # throws error when nothing unifies
     game_specs = list(game_specs)
     for game_spec in game_specs:
-        game_name = game_spec.game_name
-        if game_name in suite_games["clem"]:
+        if game_spec in suite_games["clem"]:
             suite_game_map["clem"].append(game_spec)
-        if game_name in suite_games["static"]:
+        if game_spec in suite_games["static"]:
             suite_game_map["static"].append(game_spec)
     return suite_game_map
 
