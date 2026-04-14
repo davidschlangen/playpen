@@ -212,7 +212,7 @@ def main():
     eval_parser.add_argument("--suite", choices=["clem", "static", "all"], default=None,
                              nargs="?", type=str,
                              help="(Optional) Suite selector for the eval run."
-                                  " Default: all")
+                                  )
     eval_parser.add_argument("-g", "--game", type=str, nargs="+",
                             help="""(Optional) One or more game selectors, such as a game name or a GameSpec JSON string.""")
     eval_parser.add_argument("-r", "--results_dir", type=Path, default=get_default_results_dir(),

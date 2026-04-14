@@ -115,12 +115,12 @@ The mechanism is equivalent for other providers.
 To evaluate a model's gameplay performance on the `playpen-data` validation split, run the following command:
 
 ```bash
-playpen eval <model-name>
+playpen eval <model-name> --suite all
 ```
 
 where `<model-name>` should match your model's name as specified in the model registry. Connecting to the example above,
 ```bash
-playpen eval Llama-3.1-8B-Instruct
+playpen eval Llama-3.1-8B-Instruct --suite all
 ```
 
 This operation will produce a `<model-name>.val.json` file which contains two values:
@@ -320,7 +320,7 @@ once from that of the clue giver.
 
 Register your model in `model_registry.json`, then run:
 ```bash
-playpen eval Llama-3.1-8B-Instruct
+playpen eval Llama-3.1-8B-Instruct --suite all
 ```
 
 This produces a `<model-name>.val.json` file with `clemscore` and `statscore` in a `playpen-eval/<timestamp>` folder.
