@@ -141,9 +141,13 @@ For static benchmarks:
 playpen eval Llama-3.1-8B-Instruct --suite static
 ```
 
-If you need to run the evaluation for specific games, e.g., for wordle, you can use the `-g` option of the eval command as follows:
+If you need to run the evaluation on specific benchmarks, e.g., for wordle, you can use the `-g` option of the eval command as follows:
 ```bash
 playpen eval Llama-3.1-8B-Instruct -g wordle 
+```
+This also works with multiple games: 
+```bash
+playpen eval Llama-3.1-8B-Instruct -g wordle ifeval
 ```
 
 You may also eventually rescore episodes contained in a specific folder by indicating the folder under `-r` and setting `--skip-gameplay` to avoid rerunning the games from scratch:
