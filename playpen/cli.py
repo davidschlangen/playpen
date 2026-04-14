@@ -110,25 +110,27 @@ def get_suite_game_map(game_selectors: Union[str, Dict, GameSpec, List[Union[str
         game_specs.update(
             game_registry.get_game_specs_that_unify_with(game_selector))  # throws error when nothing unifies
     game_specs = list(game_specs)
-    for game in game_specs:
-        game_name = game.game_name
+    for game_spec in game_specs:
+        game_name = game_spec.game_name
         if game_name in suite_games["clem"]:
-            suite_game_map["clem"].append(game)
+            suite_game_map["clem"].append(game_spec)
         if game_name in suite_games["static"]:
-            suite_game_map["static"].append(game)
+            suite_game_map["static"].append(game_spec)
     return suite_game_map
 
 
-def evaluate_suite(suite: str, model_spec: ModelSpec, gen_args: Dict, results_dir: Path, game_selector: str,
+def evaluate_suite(suite: str, model_spec: ModelSpec, gen_args: Dict, results_dir: Path, game_selectors: List[Union[str, Dict, GameSpec]],
                    dataset_name: str):
     suite_results_dir = results_dir / suite
     if dataset_name is not None:
         from datasets import load_dataset
         dataset = load_dataset("colab-potsdam/playpen-data", dataset_name, split="validation")
-        clem.run(game_selector, [model_spec],
+        clem.run(game_selectors, [model_spec],
                  gen_args=gen_args, results_dir_path=suite_results_dir, instances_filter=to_instances_filter(dataset))
-    clem.score(game_selector, str(suite_results_dir))
-    clem.transcripts(game_selector, str(suite_results_dir))
+    for game_selector in game_selectors:
+        clem.score(game_selector, str(suite_results_dir))
+        clem.transcripts(game_selector, str(suite_results_dir))
+
     try:
         df = clem.clemeval.perform_evaluation(str(suite_results_dir), return_dataframe=True)
     except:
