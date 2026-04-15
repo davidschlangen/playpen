@@ -280,19 +280,19 @@ OpenEnv adopts a Gymnasium-style API interface, and this should facilitate RL pr
 
 This [notebook example](./examples/openenv/wordle-trl.ipynb) shows how to train a model with GRPO on the Wordle game with _clemcore_ and _playpen_. 
 You will notice that you will have to define a custom agent and a customized rollout function to play in the game environments.
-Playen offers a base agent class (_ClemAgent_, which can be found at `playpen/agents/clem.py`). This class helps you by providing already means for collecting observations and returning their history. 
+Playpen offers a base agent class (_ClemAgent_, which can be found at `playpen/agents/clem.py`). This class helps you by providing already means for collecting observations and returning their history. 
 What you have to do is to define the `act` method, where you define how your agent should act given the observation history.
 
 # Dataset Generation
 
-In the SFT examples introduced above we make use of the the canonical [playpen-data](https://huggingface.co/datasets/colab-potsdam/playpen-data) split 
-where we converted the interactions obtained from several models playing the games into a conversational dataset (the original source of the data can be founde [here](https://github.com/clembench/clembench-runs/tree/main/v2.0).
+In the SFT examples introduced above we make use of the canonical [playpen-data](https://huggingface.co/datasets/colab-potsdam/playpen-data) split 
+where we converted the interactions obtained from several models playing the games into a conversational dataset (the original source of the data can be found [here](https://github.com/clembench/clembench-runs/tree/main/v2.0).
 In HF, the main property of a conversational dataset is that it contains samples which specify a list of `messages`.
 These messages usually iterate on roles, that is, between a `user` and an `assistant`, and carry textual content.
 
 Instead of using the data we provide, you may be interested in collected your own. All you have to do is running the _clemcore_ cli command:
 ```bash
-clem run -g "{'benchmark':['2.0']}" -m LLama-3.1-8B-Instruct
+clem run -g "{'benchmark':['2.0']}" -m Llama-3.1-8B-Instruct
 ```
 This will create a `results` directory with the model's gameplay recorded in `interaction.json` files.
 Be careful, this is different from `playpen eval` introduced above mainly because it produces a different folder structure. The results are expected to be the same.
