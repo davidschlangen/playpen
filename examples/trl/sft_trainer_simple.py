@@ -22,9 +22,8 @@ class SimpleSftTrainer(BasePlaypenTrainer):
         # By default, the dataset is stored in ~/.cache/huggingface/datasets/ on your machine. This might take a while.
         dataset = load_dataset("colab-potsdam/playpen-data", "interactions", split="train")
 
-        # Only use the episodes we are interested to train on: here the llama3-8b ones with successful outcome
-        dataset = dataset.filter(lambda episode: episode["meta"]["outcome"] == "success"
-                                                 and episode["meta"]["model"] == "Meta-Llama-3.1-8B-Instruct")
+        # Only use the episodes we are interested to train on
+        dataset = dataset.filter(lambda episode: episode["meta"]["outcome"] == "success")
 
         # We shuffle and split the remaining filtered samples to receive a dev split
         # For evaluation on the actual games performance use the validation split
